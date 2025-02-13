@@ -1,9 +1,9 @@
-# Install Unreal Engine 4.27.2 on Windows 2019
+# Install Unreal Engine 4.27.2 on Windows 2022
 
 ## Prerequisites
 
 1. Ensure you have ~50GB of available disk space for the installation.
-2. Download and run the ___Visual Studio 2019 (Community Edition)___ installer. See [Setting Up Visual Studio for Unreal Engine](https://docs.unrealengine.com/4.26/en-US/ProductionPipelines/DevelopmentSetup/VisualStudioSetup/) for more information.
+2. Download and run the ___Visual Studio 2022 (Community Edition)___ installer. See [Setting Up Visual Studio for Unreal Engine](https://docs.unrealengine.com/4.26/en-US/ProductionPipelines/DevelopmentSetup/VisualStudioSetup/) for more information.
     - Select ___Game development with C++___ under ___Workloads___.
     - Under ___Optional___, make sure the checkbox for ___Unreal Engine installer___ is checked to enable it.
 3. Download and install [Visual Studio Code](https://code.visualstudio.com/download).

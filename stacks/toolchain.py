@@ -7,7 +7,6 @@ import aws_cdk as cdk
 from typing import Any
 from aws_cdk import (
     pipelines as _pipelines,
-    aws_codecommit as _codecommit,
     aws_ssm as _ssm,
     aws_iam as _iam,
     aws_codebuild as _codebuild
@@ -25,21 +24,11 @@ class ToolChainStack(cdk.Stack):
         # Load pipeline variables form toolchain context
         context = self.node.try_get_context("toolchain-context")
 
-        # Create a CodeCommit repository to be used as the pipeline source code
-        source_repo = _codecommit.Repository(
-            self,
-            "SourceRepository",
-            repository_name=constants.WORKLOAD_NAME.lower(),
-            description=f"Source Code repository for {constants.WORKLOAD_NAME}"    
-        )
-        source = _pipelines.CodePipelineSource.code_commit(
-            repository=source_repo,
-            branch="main"
-        )
-        cdk.CfnOutput(
-            self,
-            "SourceCodeUrl",
-            value=source_repo.repository_clone_url_http
+        # Set the GitHub repo as the source
+        source = _pipelines.CodePipelineSource.connection(
+            constants.GITHUB_REPO_NAME,
+            "main",
+            connection_arn=constants.CODESTAR_CONNECTION_ARN
         )
 
         # Create a placeholder parameter for a custom fine-tuned model
