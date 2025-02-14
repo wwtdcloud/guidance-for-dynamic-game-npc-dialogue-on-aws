@@ -61,11 +61,11 @@ The Unreal Engine sample project has been tested using a **Windows 2022 Datacent
 
 Before deploying the guidance code, ensure that the following required tools have been installed:
 
-- AWS Cloud Development Kit (CDK) >= 2.174.0
+- AWS Cloud Development Kit (CDK) >= 2.178.2
 - Python >= 3.8
 - NodeJS >= 18
 
->__NOTE:__ The Guidance has been tested using AWS CDK version 2.174.0. If you wish to update the CDK application to later version, make sure to update the `requirements.txt`, and `cdk.json` files, in the root of the repository, with the updated version of the AWS CDK.
+>__NOTE:__ The Guidance has been tested using AWS CDK version 2.178.2. If you wish to update the CDK application to later version, make sure to update the `requirements.txt`, and `cdk.json` files, in the root of the repository, with the updated version of the AWS CDK.
 
 - Unreal Engine 4.26 or 4.27.
 - Microsoft Visual Studio 2022 for Unreal Engine 4 C++ development.
@@ -102,16 +102,17 @@ All features for this guidance are only available in the _US East (N. Virginia)_
 
 1. Make a fork of this project in GitHub. Select **Fork** and follow the instructions to create a fork in your own GitHub account.
 2. Connect GitHub to the AWS Developer Tools in the AWS Console. Though this could be done in the CDK scripts, you would still need to verify the connection in the AWS Console, so it's easier to make the connection there:
-    a. Open the AWS Management Console, and switch to the region where you will deploy the project 
-    b. Navigate to the CodePipeline service
-    c. In the left navigation pane, choose "Settings" and then "Connections"
-    d. Select "Create Connection"
-    e. Choose "GitHub" as the provider
-    f. Name the connection "DynamicNPC"
-    g. Select "Connect to GitHub"
-    h. Authorize AWS Connector for GitHub (you may need to log in to GitHub if you aren't already)
-    i. Leave the defaults, and select "Connect"
-    j. Keep a note of the Arn for the connection
+    - a. Open the AWS Management Console, and switch to the region where you will deploy the project 
+    - b. Navigate to the CodePipeline service
+    - c. In the left navigation pane, choose "Settings" and then "Connections"
+    - d. Select "Create Connection"
+    - e. Choose "GitHub" as the provider
+    - f. Name the connection "DynamicNPC"
+    - g. Select "Connect to GitHub"
+    - h. Authorize AWS Connector for GitHub (you may need to log in to GitHub if you aren't already)
+    - i. Leave the defaults, and select "Connect"
+    - j. Keep a note of the Arn for the connection
+>__NOTE:__ Verify the configuration in GitHub to ensure that the AWS Connector for GitHub [has access to the repository](https://docs.aws.amazon.com/dtconsole/latest/userguide/connections-create-github.html).
 3. Clone the repository. Note that you will need to [provide a personal access token, or authenticate in some other way](https://docs.github.com/get-started/getting-started-with-git/about-remote-repositories#cloning-with-https-urls):
     ```bash
     git clone https://github.com/[your GitHub user name]/guidance-for-dynamic-game-npc-dialogue-on-aws dynamic-npc
@@ -181,17 +182,7 @@ To verify a successful deployment of this guidance, open [CloudFormation](https:
 
 Once the deployment has been validated, you can deploy the infrastructure into the QA stage, as part of an LLMOps pipeline, using the following steps:
 
-1. Once the toolchain stack has been deployed, initialize the `main` branch:
-    ```bash
-    rm -rf .git && \
-    git init --initial-branch=main
-    ```
-2. Add the newly **AWS CodeCommit** repository as the upstream origin, substituting the appropriate `WORKLOAD_NAME`, and `REGION` parameters. For example if your `WORKLOAD_NAME` parameter is `Ada`, and the `REGION` is `us-east-1`, the the repository url is `https://git-codecommit.us-east-1.amazonaws.com/v1/repos/ada`,
-    ```bash
-    git remote add origin https://git-codecommit.<REGION>.amazonaws.com/v1/repos/<WORKLOAD_NAME>
-    ```
-    >__NOTE:__ The `WORKLOAD_NAME` is lower case.
-3. Add the source code to to trigger a CI/CD/CT pipeline execution.
+1. Once the toolchain stack has been deployed, add the source code to trigger a CI/CD/CT pipeline execution:
     ```bash
     git add -A
     
@@ -199,6 +190,7 @@ Once the deployment has been validated, you can deploy the infrastructure into t
     
     git push --set-upstream origin main
     ```
+    >__NOTE:__ Specifies that you want to push to the `main` branch.
 4. Open the [CodePipeline](https://console.aws.amazon.com/codesuite/codepipeline/pipelines) console, and click on the LLMOps pipeline for the workload. For example, if your `WORKLOAD_NAME` parameter is `Ada`, CodePipeline will reflect that the `Ada-Pipeline`  is `In progress`.
 
 <p align="center">
