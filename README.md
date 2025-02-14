@@ -51,7 +51,7 @@ For example, the following table shows a break-down of approximate costs _(per m
 
 ### Operating System, Tools, and Configuration
 
-The deployment may require additional steps, and configured Python libraries (see [Third-party tools](#third-party-tools)). The instructions also use the [GitHub fork feature](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) that will connect to [AWS CodePipeline](https://aws.amazon.com/codepipeline/). Once the project is deployed, you may use any code editor and Git client to make and push changes to your fork. When developing this project, we used [Visual Studio Code](https://code.visualstudio.com/) and its [Git integration](https://code.visualstudio.com/docs/sourcecontrol/overview).
+These deployment instructions are optimized to best work on a **Amazon Linux 2023** based development environment. Deployment using another OS may require additional steps, and configured Python libraries (see [Third-party tools](#third-party-tools)). The instructions also use the [GitHub fork feature](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) that will connect to [AWS CodePipeline](https://aws.amazon.com/codepipeline/). Once the project is deployed, you may use any code editor and Git client to make and push changes to your fork. When developing this project, we used [Visual Studio Code](https://code.visualstudio.com/) and its [Git integration](https://code.visualstudio.com/docs/sourcecontrol/overview).
 
 The Unreal Engine sample project has been tested using a **Windows 2022 Datacenter (g5.4xlarge)** EC2 instance. See the [Stream a remote environment with NICE DCV over QUIC UDP for a 4K monitor at 60 FPS](https://aws.amazon.com/blogs/gametech/stream-remote-environment-nice-dcv-quic-udp-4k-monitor-60-fps/) blog post, for more information on setting up a similar environment.
 
@@ -309,5 +309,10 @@ To delete the deployed resources, use the AWS CDK CLI to run the following steps
     - <WORKLOAD_NAME>-Tuning
     - <WORKLOAD_NAME>-PROD
     - <WORKLOAD_NAME>-QA
+5. Remove the git repository with the commands:
+    ```bash
+    cd ~
+    rm -r dynamic-npc
+    ```
 
 >__NOTE:__ Deleting the deployed resources will not delete the __Amazon S3__ bucket, in order to protect any training data already stored. See the [Deleting a bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/delete-bucket.html) section of the __Amazon Simple Storage Service__ user guide for the various ways to delete the S3 bucket.
