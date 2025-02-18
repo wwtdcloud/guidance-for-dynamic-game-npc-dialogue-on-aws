@@ -22,7 +22,7 @@
 
 ## Overview
 
-Typical player interactions with NPCs are static, and require large teams of script writers to create static dialog content for each character, in each game, and each game version to ensure consistency with game lore. This Guidance helps game developers automate the process of creating a non-player character (NPC) for their games and associated infrastructure. It uses Unreal Engine MetaHuman, along with foundation models (FMs), for instance the large language models (LLMs) Claude 2, and Llama 2, to improve NPC conversational skills. This leads to dynamic responses from the NPC that are unique to each player, adding to scripted dialogue. By using the Large Language Model Ops (LLMOps) methodology, this Guidance accelerates prototyping, and delivery time by continually integrating, and deploying the generative AI application, along with fine-tuning the LLMs. All while helping to ensure that the NPC has full access to a secure knowledge base of game lore, using retrieval-augmented generation (RAG).
+Typical player interactions with NPCs are static, and require large teams of script writers to create static dialog content for each character, in each game, and each game version to ensure consistency with game lore. This Guidance helps game developers automate the process of creating a non-player character (NPC) for their games and associated infrastructure. It uses Unreal Engine, along with foundation models (FMs), for instance, the large language models (LLMs) Claude 2, and Llama 2, to improve NPC conversational skills. This leads to dynamic responses from the NPC that are unique to each player, adding to scripted dialogue. By using the Large Language Model Ops (LLMOps) methodology, this Guidance accelerates prototyping, and delivery time by continually integrating, and deploying the generative AI application, along with fine-tuning the LLMs. All while helping to ensure that the NPC has full access to a secure knowledge base of game lore, using retrieval-augmented generation (RAG).
 
 ___If you're looking for quick and easy step by step guide to get started, check out the Workshop -  [Operationalize Generative AI Applications using LLMOps](https://catalog.us-east-1.prod.workshops.aws/workshops/90992473-01e8-42d6-834f-9baf866a9057/en-US).___
 
@@ -49,11 +49,11 @@ For example, the following table shows a break-down of approximate costs _(per m
 
 ## Prerequisites
 
-### Operating System
+### Operating System, Tools, and Configuration
 
-These deployment instructions are optimized to best work on a pre-configured **Amazon Linux 2023** [AWS Cloud9](https://aws.amazon.com/cloud9/) development environment. Refer to the [Individual user setup for AWS Cloud9](https://docs.aws.amazon.com/cloud9/latest/user-guide/setup-express.html) for more information on how to set up Cloud9 as a user in the AWS account. Deployment using another OS may require additional steps, and configured python libraries (see [Third-party tools](#third-party-tools)). 
+These deployment instructions are optimized to best work on a **Amazon Linux 2023** based development environment. Deployment using another OS may require additional steps, and configured Python libraries (see [Third-party tools](#third-party-tools)). The instructions also use the [GitHub fork feature](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) that will connect to [AWS CodePipeline](https://aws.amazon.com/codepipeline/). Once the project is deployed, you may use any code editor and Git client to make and push changes to your fork. When developing this project, we used [Visual Studio Code](https://code.visualstudio.com/) and its [Git integration](https://code.visualstudio.com/docs/sourcecontrol/overview).
 
-The Unreal Engine sample project has been tested using a **Windows 2019 (g4dn.4xlarge)** EC2 instance. See the [Stream a remote environment with NICE DCV over QUIC UDP for a 4K monitor at 60 FPS](https://aws.amazon.com/blogs/gametech/stream-remote-environment-nice-dcv-quic-udp-4k-monitor-60-fps/) blog post, for more information on setting up a similar environment.
+The Unreal Engine sample project has been tested using a **Windows 2022 Datacenter (g5.4xlarge)** EC2 instance. See the [Stream a remote environment with NICE DCV over QUIC UDP for a 4K monitor at 60 FPS](https://aws.amazon.com/blogs/gametech/stream-remote-environment-nice-dcv-quic-udp-4k-monitor-60-fps/) blog post, for more information on setting up a similar environment.
 
 >__NOTE:__ A Github [dev container](https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers) configuration has been provided should you wish to use [GitHub codespaces](https://docs.github.com/en/codespaces), or [Visual Studio Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) as your development environment.
 
@@ -61,17 +61,17 @@ The Unreal Engine sample project has been tested using a **Windows 2019 (g4dn.4x
 
 Before deploying the guidance code, ensure that the following required tools have been installed:
 
-- AWS Cloud Development Kit (CDK) >= 2.126.0
+- AWS Cloud Development Kit (CDK) >= 2.178.2
 - Python >= 3.8
 - NodeJS >= 18
 
->__NOTE:__ The Guidance has been tested using AWS CDK version 2.126.0. If you wish to update the CDK application to later version, make sure to update the `requirements.txt`, and `cdk.json` files, in the root of the repository, with the updated version of the AWS CDK.
+>__NOTE:__ The Guidance has been tested using AWS CDK version 2.178.2. If you wish to update the CDK application to later version, make sure to update the `requirements.txt`, and `cdk.json` files, in the root of the repository, with the updated version of the AWS CDK.
 
 - Unreal Engine 4.26 or 4.27.
-- Microsoft Visual Studio 2019 for Unreal Engine 4 C++ development.
+- Microsoft Visual Studio 2022 for Unreal Engine 4 C++ development.
 - Microsoft Visual Studio Code for editing.
 
->__NOTE:__ If you need help with these setup steps, refer to the Unreal Engine 4 documentation, especially "Setting Up Visual Studio for Unreal Engine". The  was only tested with Visual Studio 2019 with Unreal Engine 4.27. The Unreal Engine sample __DOES NOT__ work with Ureal Engine 5.
+>__NOTE:__ If you need help with these setup steps, refer to the Unreal Engine 4 documentation, especially "Setting Up Visual Studio for Unreal Engine". The  was only tested with Visual Studio 2022 with Unreal Engine 4.27. The Unreal Engine sample __DOES NOT__ work with Ureal Engine 5.
 
 ### AWS account requirements
 
@@ -100,27 +100,40 @@ All features for this guidance are only available in the _US East (N. Virginia)_
 
 ## Deployment Steps
 
-1. In the Cloud9 IDE, use the terminal to clone the repository:
+1. Make a fork of this project in GitHub. Select **Fork** and follow the instructions to create a fork in your own GitHub account.
+2. Connect GitHub to the AWS Developer Tools in the AWS Console. Though this could be done in the CDK scripts, you would still need to verify the connection in the AWS Console, so it's easier to make the connection there:
+    - a. Open the AWS Management Console, and switch to the region where you will deploy the project 
+    - b. Navigate to the CodePipeline service
+    - c. In the left navigation pane, choose "Settings" and then "Connections"
+    - d. Select "Create Connection"
+    - e. Choose "GitHub" as the provider
+    - f. Name the connection "DynamicNPC"
+    - g. Select "Connect to GitHub"
+    - h. Authorize AWS Connector for GitHub (you may need to log in to GitHub if you aren't already)
+    - i. Leave the defaults, and select "Connect"
+    - j. Keep a note of the Arn for the connection
+>__NOTE:__ Verify the configuration in GitHub to ensure that the AWS Connector for GitHub [has access to the repository](https://docs.aws.amazon.com/dtconsole/latest/userguide/connections-create-github.html).
+3. Clone the repository. Note that you will need to [provide a personal access token, or authenticate in some other way](https://docs.github.com/get-started/getting-started-with-git/about-remote-repositories#cloning-with-https-urls):
     ```bash
-    git clone https://github.com/aws-solutions-library-samples/guidance-for-dynamic-game-npc-dialogue-on-aws dynamic-npc
+    git clone https://github.com/[your GitHub user name]/guidance-for-dynamic-game-npc-dialogue-on-aws dynamic-npc
     ```
-2. Change to the repository root folder:
+4. Change to the repository root folder:
     ```bash
     cd dynamic-npc
     ```
-3. Initialize the Python virtual environment:
+5. Initialize the Python virtual environment:
     ```bash
     python3 -m venv .venv
     ```
-4. Activate the virtual environment:
+6. Activate the virtual environment:
     ```bash
     source .venv/bin/activate
     ```
-5. Install the necessary python libraries in the virtual environment:
+7. Install the necessary python libraries in the virtual environment:
     ```bash
-    python -m pip install -r requirements.txt
+    python3 -m pip install -r requirements.txt
     ```
-6. Open the `constants.py` file for editing. The following settings can be adjusted to suite your use case:
+8. Type `nano constants.py` to open the `constants.py` file for editing. The following settings can be adjusted to suite your use case:
     - `WORKLOAD_NAME`
         - ___Description:___ The name of the workload that matches your use case. This will be used as a prefix for an component deployed in your AWS account.
         - ___Type:___ String
@@ -129,6 +142,14 @@ All features for this guidance are only available in the _US East (N. Virginia)_
         - ___Description:___ The name of the AWS region into which you want to deploy the use case.
         - ___Type:___ String
         - ___Example:___ `"us-east-1"`
+    - `GITHUB_REPO_NAME`
+        - ___Description:___ The name of your forked GitHub repo, including your username in the format `github_username/repo_name`.
+        - ___Type:___ String
+        - ___Example:___ `"my-github-username/guidance-for-dynamic-game-npc-dialogue-on-aws"`
+    - `CODESTAR_CONNECTION_ARN`
+        - ___Description:___ The Arn for the CodeStar Connection you noted above
+        - ___Type:___ String
+        - ___Example:___ `"arn:aws:codeconnections:us-east-1:555555555555:connection/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111"`
     - `SM_DOMAIN_ID`
         - ___Description:___ The ID for your prerequisite __Amazon SageMaker Domain__ in your configured AWS region. You can view the ID for your domain in the [AWS Console](https://console.aws.amazon.com/sagemaker/), or by running the ```aws sagemaker list-domains --query "Domains[*].DomainId" --output text``` command.
         - ___Type:___ String
@@ -141,12 +162,12 @@ All features for this guidance are only available in the _US East (N. Virginia)_
         - ___Description:___ The name of the "Production" stage of the LLMOps pipeline.
         - ___Type:___ String
         - ___Default:___ `"PROD"`
-7. Save the `constants.py` file after updating your use case settings.
-8. Verify that the CDK deployment correctly synthesizes the CloudFormation template:
+9. Save the `constants.py` file after updating your use case settings.
+10. Verify that the CDK deployment correctly synthesizes the CloudFormation template:
     ```bash
     cdk synth
     ```
-9. Deploy the guidance:
+11. Deploy the guidance:
     ```bash
     cdk deploy --require-approval never
     ```
@@ -161,17 +182,7 @@ To verify a successful deployment of this guidance, open [CloudFormation](https:
 
 Once the deployment has been validated, you can deploy the infrastructure into the QA stage, as part of an LLMOps pipeline, using the following steps:
 
-1. Once the toolchain stack has been deployed, use the Cloud9 IDE, to initialize the `main` branch:
-    ```bash
-    rm -rf .git && \
-    git init --initial-branch=main
-    ```
-2. Add the newly **AWS CodeCommit** repository as the upstream origin, substituting the appropriate `WORKLOAD_NAME`, and `REGION` parameters. For example if your `WORKLOAD_NAME` parameter is `Ada`, and the `REGION` is `us-east-1`, the the repository url is `https://git-codecommit.us-east-1.amazonaws.com/v1/repos/ada`,
-    ```bash
-    git remote add origin https://git-codecommit.<REGION>.amazonaws.com/v1/repos/<WORKLOAD_NAME>
-    ```
-    >__NOTE:__ The `WORKLOAD_NAME` is lower case.
-3. Add the source code to to trigger a CI/CD/CT pipeline execution.
+1. Once the toolchain stack has been deployed, add the source code to trigger a CI/CD/CT pipeline execution:
     ```bash
     git add -A
     
@@ -179,6 +190,7 @@ Once the deployment has been validated, you can deploy the infrastructure into t
     
     git push --set-upstream origin main
     ```
+    >__NOTE:__ Specifies that you want to push to the `main` branch.
 4. Open the [CodePipeline](https://console.aws.amazon.com/codesuite/codepipeline/pipelines) console, and click on the LLMOps pipeline for the workload. For example, if your `WORKLOAD_NAME` parameter is `Ada`, CodePipeline will reflect that the `Ada-Pipeline`  is `In progress`.
 
 <p align="center">
@@ -240,13 +252,13 @@ An Unreal Engine sample project, [AmazonPollyMetaHuman](https://artifacts.kits.e
 15. Using the Unreal Editor, click the `Compile` button to recompile the C++ code.
 16. Once the updated code has been compiled, click the `Play` button to interact with the ___Ada___ NPC.
 
->__NOTE:__ Review the detailed [installation guide](assets/docs/metahuman_windows.md) for Windows 2019 for more information on installing, and configuring both Unreal Engine, and the sample project.
+>__NOTE:__ Review the detailed [installation guide](assets/docs/metahuman_windows.md) for Windows 2022 for more information on installing, and configuring both Unreal Engine, and the sample project.
 
 ## Next Steps
 
 Once the sample application has been validated using the `QA` deployment, you can deploy the infrastructure into production, as part of an LLMOps pipeline, using the following steps:
 
-1. Using the Cloud9 IDE, open the `stacks/toolchain.py` file for editing.
+1. Open the `stacks/toolchain.py` file for editing.
 2. Uncomment the following code to enable the `PROD`, and `TUNING` stages of the LLMOps pipeline:
     ```python
     # Add Production Stage
@@ -284,9 +296,9 @@ Once the sample application has been validated using the `QA` deployment, you ca
 
 To delete the deployed resources, use the AWS CDK CLI to run the following steps:
 
-1. Using the Cloud9 terminal window, change to the root of the cloned repository:
+1. Change to the root of the cloned repository:
     ```bash
-    cd ~/environment/dynamic-npc
+    cd dynamic-npc
     ```
 2. Run the command to delete the CloudFormation stack:
     ```bash
@@ -297,5 +309,10 @@ To delete the deployed resources, use the AWS CDK CLI to run the following steps
     - <WORKLOAD_NAME>-Tuning
     - <WORKLOAD_NAME>-PROD
     - <WORKLOAD_NAME>-QA
+5. Remove the git repository with the commands:
+    ```bash
+    cd ~
+    rm -r dynamic-npc
+    ```
 
 >__NOTE:__ Deleting the deployed resources will not delete the __Amazon S3__ bucket, in order to protect any training data already stored. See the [Deleting a bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/delete-bucket.html) section of the __Amazon Simple Storage Service__ user guide for the various ways to delete the S3 bucket.
