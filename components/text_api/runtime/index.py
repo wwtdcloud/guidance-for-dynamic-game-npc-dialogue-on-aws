@@ -57,7 +57,7 @@ def validate_inputs(body: Dict):
 
 
 def get_prediction(question: str) -> str:
-    prompt_template = f"""\n\nHuman: Your name is Ada, and you are a helpful assitant. Provide a concise answer to the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+    prompt_template = f"""\n\nHuman: You are a helpful assitant. Provide a concise answer to the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
     
     Question: {question}
     
@@ -68,14 +68,14 @@ def get_prediction(question: str) -> str:
         body=json.dumps(
             {
                 "prompt": prompt_template,
-                "max_tokens_to_sample": 300,
-                "temperature": 0.5,
+                "max_tokens_to_sample": 4096,
+                "temperature": 0.7,
                 "top_k": 250,
                 "top_p": 1,
                 "stop_sequences": [
                     "\n\nHuman:"
                 ],
-                "anthropic_version": "bedrock-2023-05-31"
+                "anthropic_version": "anthropic.claude-v2:1"
             }
         ),
         modelId=TEXT_MODEL_ID,
