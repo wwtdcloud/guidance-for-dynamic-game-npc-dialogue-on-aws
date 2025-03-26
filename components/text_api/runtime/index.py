@@ -57,7 +57,7 @@ def validate_inputs(body: Dict):
 
 
 def get_prediction(question: str) -> str:
-    prompt_template = f"""\n\nHuman: You are a helpful assitant. Provide a concise answer to the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+    prompt_template = f"""\n\nHuman: You are a helpful assistant. Provide a concise answer to the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
     
     Question: {question}
     
@@ -75,7 +75,7 @@ def get_prediction(question: str) -> str:
                 "stop_sequences": [
                     "\n\nHuman:"
                 ],
-                "anthropic_version": "anthropic.claude-v2:1"
+                "anthropic_version": "anthropic.claude-3-sonnet-20240229"
             }
         ),
         modelId=TEXT_MODEL_ID,
